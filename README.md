@@ -1,71 +1,96 @@
-Student Attendance and Leave Management System
+# **Student Attendance and Leave Management System**
 
-About the Project
 
-This is a web-based Student Attendance and Leave Management System developed for the Department of Electrical and Information Engineering, Faculty of Engineering, University of Ruhuna.
 
-The system is used to manage student details, record attendance for different modules, calculate attendance percentages, and handle student leave requests.
+## About the Project
 
-Technologies Used
+This web application was developed to manage student attendance and leave requests.
 
-* Python
-* Flask
-* SQLite
-* HTML
-* CSS
 
-Features
 
-* Admin and Student login
-* Add, view, edit, and delete student details
-* Manage modules for different semesters
-* Mark and update student attendance
-* View attendance records by module and batch
-* Calculate student attendance percentages
-* Check the minimum 80% attendance requirement
-* Apply for student leave
-* Edit or withdraw pending leave requests
-* Approve or reject leave requests through the Admin account
-* View leave request history
-* Dashboard to view system information
+###### Technologies Used
 
-User Roles
+Python
 
-Admin
+Flask
 
-The Admin can manage student details, modules, attendance records, and leave requests.
+SQLite
 
-Student
+HTML
 
-Students can view their attendance information, submit leave requests, and edit or withdraw their own pending leave requests.
+CSS
 
-How to Run
+JavaScript
 
-1. Install Python on your computer.
-2. Open the project folder in VS Code.
-3. Open the terminal in VS Code.
-4. Install the required packages:
 
-pip install -r requirements.txt
 
-5. Run the application:
+###### Main Features
 
-python app.py
+The application has two types of users: Admin and Student 
 
-6. Open a web browser and enter:
 
-http://127.0.0.1:5000
 
-7. Log in using an existing Admin or Student account.
+###### **Admin**
 
-Database
+Available functions:
 
-SQLite is used to store student details, module information, attendance records, user accounts, and leave requests.
+Managing student details
 
-The database file is named students.db.
+Managing modules
 
-Project Information
+Marking and update student attendance
 
-Department of Electrical and Information Engineering
-Faculty of Engineering
-University of Ruhuna
+Viewing attendance records
+
+Viewing and managing leave requests
+
+Approving or rejecting leave requests
+
+
+
+###### **Student**
+
+Available functions:
+
+Logging into the system
+
+Viewing their attendance details
+
+submitting leave requests
+
+viewing the status of leave requests
+
+
+
+
+
+##### How to Run the project
+
+
+
+1. Download the project
+
+2\. Open the project folder in VS Code
+
+3\. Open the terminal
+
+4\. Install the required packages:
+
+&#x20;   pip install -r requirements.txt
+
+5\. Run the application:
+
+&#x20;   python app.py
+
+6\. Using a web browser, open the local address shown in the terminal
+
+
+
+###### Database
+
+SQLite is used for storing student details, attendance records. module details and leave requests. When the application runs, the database file is created locally.
+
+
+
+
+
