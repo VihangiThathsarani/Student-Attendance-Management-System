@@ -1,36 +1,36 @@
-# **Student Attendance and Leave Management System**
+# **#Student Attendance and Leave Management System**
 
 
 
-## About the Project
+## \##About the Project
 
 This web application was developed to manage student attendance and leave requests.
 
 
 
-###### Technologies Used
+###### \##Technologies Used
 
-Python
+\-Python
 
-Flask
+\-Flask
 
-SQLite
+\-SQLite
 
-HTML
+\-HTML
 
-CSS
+\-CSS
 
-JavaScript
+\-JavaScript
 
 
 
-###### Main Features
+###### \## Main Features
 
 The application has two types of users: Admin and Student 
 
 
 
-###### **Admin**
+###### **### Admin**
 
 Available functions:
 
@@ -48,7 +48,7 @@ Approving or rejecting leave requests
 
 
 
-###### **Student**
+###### **### Student**
 
 Available functions:
 
@@ -64,7 +64,7 @@ viewing the status of leave requests
 
 
 
-##### How to Run the project
+##### \## How to Run the project
 
 
 
@@ -86,7 +86,7 @@ viewing the status of leave requests
 
 
 
-###### Database
+###### \## Database
 
 SQLite is used for storing student details, attendance records. module details and leave requests. When the application runs, the database file is created locally.
 
