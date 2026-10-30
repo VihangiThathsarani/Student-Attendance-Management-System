@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Module Registration</title>
+
+<style>
+* {box-sizing:border-box}
+body {
+    font-family:Arial,sans-serif;
+    background:#f1f5f9;
+    margin:0;
+    color:#1e293b;
+}
+header {
+    background:#1e3a8a;
+    color:white;
+    padding:24px 6%;
+}
+header h1 {margin:0;font-size:25px}
+header p {color:#bfdbfe}
+main {
+    max-width:1100px;
+    margin:30px auto;
+    padding:0 16px;
+}
+.card {
+    background:white;
+    padding:25px;
+    border-radius:12px;
+    margin-bottom:20px;
+    box-shadow:0 3px 12px #0001;
+}
+h2 {color:#1e40af}
+select {
+    width:100%;
+    padding:12px;
+    border:1px solid #cbd5e1;
+    border-radius:7px;
+}
+button,.btn {
+    display:inline-block;
+    padding:11px 18px;
+    background:#2563eb;
+    color:white;
+    border:0;
+    border-radius:7px;
+    cursor:pointer;
+    text-decoration:none;
+}
+.module {
+    padding:12px;
+    border-bottom:1px solid #e2e8f0;
+}
+.module input {margin-right:10px}
+.success {
+    background:#dcfce7;
+    padding:12px;
+    border-radius:7px;
+    color:#166534;
+}
+.small {color:#64748b;font-size:13px}
+</style>
+</head>
+
+<body>
+<header>
+<h1>Department of Electrical and Information Engineering</h1>
+<p>Faculty of Engineering | University of Ruhuna</p>
+</header>
+
+<main>
+<a class="btn" href="{{ url_for('dashboard') }}">
+Back to Dashboard
+</a>
+
+<section class="card">
+<h2>Student Module Registration</h2>
+
+<form method="GET" action="{{ url_for('module_registration') }}">
+<label>Select Student</label>
+<select name="student_id" required onchange="this.form.submit()">
+<option value="">Select Student</option>
+{% for s in students %}
+<option value="{{ s['id'] }}"
+ {% if student and student['id'] == s['id'] %}selected{% endif %}>
+{{ s['student_id'] }} - {{ s['name'] }}
+</option>
+{% endfor %}
+</select>
+</form>
+</section>
+
+{% if student %}
+<section class="card">
+<h2>Semester {{ student['semester'] }} Modules</h2>
+<p>Batch: {{ student['batch'] }}</p>
+
+{% if message %}
+<div class="success">{{ message }}</div>
+{% endif %}
+
+<form method="POST" action="{{ url_for('module_registration') }}">
+<input type="hidden" name="student_id" value="{{ student['id'] }}">
+
+<h3>Available Modules</h3>
+
+{% for module in modules %}
+<div class="module">
+<label>
+<input type="checkbox" name="modules"
+ value="{{ module['id'] }}"
+ {% if module['id'] in registered_ids %}checked{% endif %}>
+<strong>{{ module['code'] }}</strong>
+— {{ module['name'] }}
+<span class="small">({{ module['module_type'] }})</span>
+</label>
+</div>
+{% endfor %}
+
+<br>
+<button type="submit">Save Module Registration</button>
+</form>
+</section>
+{% endif %}
+</main>
+</body>
+</html>

@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Module Attendance Overview</title>
+<style>
+* {box-sizing:border-box}
+body {
+    margin:0;
+    background:#f1f5f9;
+    font-family:Arial,sans-serif;
+    color:#1e293b;
+}
+header {
+    background:#1e3a8a;
+    color:white;
+    padding:24px 6%;
+}
+header h1 {margin:0;font-size:25px}
+header p {color:#bfdbfe}
+main {max-width:1150px;margin:25px auto;padding:0 16px}
+.card {
+    background:white;
+    padding:24px;
+    border-radius:12px;
+    margin-bottom:20px;
+    box-shadow:0 3px 12px #0001;
+}
+h2 {color:#1e40af;margin-top:0}
+.grid {
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:16px;
+}
+.stats {
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:15px;
+}
+.stat {
+    background:#eff6ff;
+    border-radius:10px;
+    padding:20px;
+}
+.stat p {margin:0 0 10px;color:#64748b}
+.stat h2 {font-size:30px;margin:0}
+label {display:block;font-weight:bold;margin-bottom:8px}
+select,input {
+    width:100%;
+    padding:11px;
+    border:1px solid #cbd5e1;
+    border-radius:7px;
+}
+button,.btn {
+    display:inline-block;
+    background:#2563eb;
+    color:white;
+    border:0;
+    border-radius:7px;
+    padding:11px 17px;
+    text-decoration:none;
+    cursor:pointer;
+}
+table {width:100%;border-collapse:collapse}
+th,td {
+    padding:12px;
+    text-align:left;
+    border-bottom:1px solid #e2e8f0;
+}
+th {background:#eff6ff;color:#1e40af}
+.table-wrap {overflow-x:auto}
+.good {color:#15803d;font-weight:bold}
+.bad {color:#dc2626;font-weight:bold}
+@media(max-width:650px) {
+    .grid,.stats {grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<header>
+<h1>Module Attendance Overview</h1>
+<p>Department of Electrical and Information Engineering</p>
+<p>Faculty of Engineering | University of Ruhuna</p>
+</header>
+
+<main>
+<a class="btn" href="{{ url_for('dashboard') }}">
+Back to Dashboard
+</a>
+
+<section class="card">
+<h2>Select Semester and Module</h2>
+
+<form method="GET" action="{{ url_for('module_overview') }}">
+<div class="grid">
+<div>
+<label>Semester</label>
+<select name="semester" required onchange="this.form.submit()">
+<option value="">Select Semester</option>
+{% for sem in range(3,9) %}
+<option value="{{ sem }}"
+{% if semester == sem %}selected{% endif %}>
+Semester {{ sem }}
+</option>
+{% endfor %}
+</select>
+</div>
+
+<div>
+<label>Module</label>
+<select name="module_id" required>
+<option value="">Select Module</option>
+{% for m in modules %}
+<option value="{{ m['id'] }}"
+{% if selected_module == m['id'] %}selected{% endif %}>
+{{ m['code'] }} - {{ m['name'] }}
+</option>
+{% endfor %}
+</select>
+</div>
+
+<div>
+    <label>Batch</label>
+    <select name="batch">
+        <option value="">All Batches</option>
+        {% for batch in batches %}
+        <option value="{{ batch }}"
+            {% if selected_batch == batch %}selected{% endif %}>
+            Batch {{ batch }}
+        </option>
+        {% endfor %}
+    </select>
+</div>
+</div>
+
+<br>
+<button type="submit">View Overview</button>
+</form>
+</section>
+
+{% if module %}
+<section class="card">
+<h2>{{ module['code'] }} - {{ module['name'] }}</h2>
+
+<p>Semester {{ module['semester'] }}</p>
+
+<h3>Daily Attendance</h3>
+<label>Choose Date</label>
+<form method="GET" action="{{ url_for('module_overview') }}">
+<input type="hidden" name="semester" value="{{ semester }}">
+<input type="hidden" name="module_id" value="{{ selected_module }}">
+<input type="hidden" name="batch" value="{{ selected_batch }}">
+<input type="date" name="date" value="{{ selected_date }}"
+       max="{{ today }}">
+<br><br>
+<button type="submit">Show Attendance</button>
+</form>
+
+<br>
+<div class="stats">
+<div class="stat">
+<p>Present Records</p>
+<h2>{{ daily.present }}</h2>
+</div>
+<div class="stat">
+<p>Absent Records</p>
+<h2>{{ daily.absent }}</h2>
+</div>
+<div class="stat">
+<p>Marked Records</p>
+<h2>{{ daily.total }}</h2>
+</div>
+<div class="stat">
+    <p>Not Marked</p>
+    <h2>{{ daily.not_marked }}</h2>
+</div>
+</div>
+</section>
+
+<section class="card">
+<h2>Student Attendance Percentage</h2>
+<p>Minimum requirement: 80%</p>
+
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th>Student ID</th>
+<th>Name</th>
+<th>Present</th>
+<th>Absent</th>
+<th>Total</th>
+<th>Percentage</th>
+<th>Eligibility</th>
+</tr>
+</thead>
+<tbody>
+{% for r in summary %}
+<tr>
+<td>{{ r['student_id'] }}</td>
+<td>{{ r['student_name'] }}</td>
+<td>{{ r['present_count'] }}</td>
+<td>{{ r['total_count'] - r['present_count'] }}</td>
+<td>{{ r['total_count'] }}</td>
+<td>
+{% if r['total_count'] %}
+{{ "%.1f"|format(r['present_count'] * 100 / r['total_count']) }}%
+{% else %}
+Not recorded
+{% endif %}
+</td>
+<td>
+{% if not r['total_count'] %}
+Not recorded
+{% elif r['present_count'] * 100 >= 80 * r['total_count'] %}
+<span class="good">Meets 80%</span>
+{% else %}
+<span class="bad">Below 80%</span>
+{% endif %}
+</td>
+</tr>
+{% else %}
+<tr><td colspan="7">No attendance records found for the selected module and batch.</td></tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+<p style="color:#64748b;font-size:13px">
+Percentages are based on recorded attendance sessions only.
+Unmarked sessions are not automatically counted as absent.
+</p>
+</section>
+{% endif %}
+</main>
+</body>
+</html>

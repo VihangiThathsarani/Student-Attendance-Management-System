@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard | Student Management</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f1f5f9;color:#1e293b}
+header{background:#1e3a8a;color:white;padding:26px 6%}
+header h1{margin:0;font-size:26px}
+header p{color:#bfdbfe;margin-bottom:0}
+main{max-width:1200px;margin:30px auto;padding:0 18px}
+nav{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:25px}
+nav a{background:white;padding:13px 18px;border-radius:9px;
+      text-decoration:none;color:#1e40af;font-weight:bold;
+      box-shadow:0 2px 8px #0001}
+nav a:hover{background:#dbeafe}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.card{background:white;border-radius:14px;padding:25px;
+      box-shadow:0 3px 12px #0001}
+.card h3{font-size:15px;color:#64748b;margin:0 0 14px}
+.number{font-size:38px;font-weight:bold;color:#1e3a8a}
+.section{margin-top:30px}
+.section h2{color:#1e40af}
+.quick{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.quick a{display:block;background:white;padding:25px;border-radius:12px;
+         text-decoration:none;color:#1e293b;box-shadow:0 3px 12px #0001}
+.quick strong{display:block;color:#1e40af;margin-bottom:10px}
+.quick span{color:#64748b;font-size:14px}
+footer{text-align:center;padding:25px;color:#64748b}
+@media(max-width:700px){
+.grid,.quick{grid-template-columns:1fr}
+header h1{font-size:21px}
+}
+</style>
+</head>
+<body>
+
+<header>
+<h1>Student Attendance & Leave Management System</h1>
+<p>Logged in as: {{ session.get("username") }} ({{ session.get("role") }})</p>
+<p>University Management Dashboard</p>
+<form action="{{ url_for('logout') }}" method="POST"
+      style="text-align: right; margin-top: 10px;">
+    <button type="submit"
+            style="background: #dc3545;
+                   color: white;
+                   border: none;
+                   padding: 10px 20px;
+                   border-radius: 6px;
+                   cursor: pointer;">
+        Logout
+    </button>
+</form>
+</header>
+
+<main>
+<nav>
+<a href="/dashboard">Dashboard</a>
+<a href="students">Students</a>
+<a href="/attendance">Attendance</a>
+<a href="/leave">Leave Management</a>
+</nav>
+
+<h2>Overview</h2>
+<div class="grid">
+<div class="card">
+<h3>Total Students</h3>
+<div class="number">{{ stats.students }}</div>
+</div>
+
+<div class="card">
+<h3>Present Records Today</h3>
+<div class="number">{{ stats.present }}</div>
+</div>
+
+<div class="card">
+<h3>Absent Records Today</h3>
+<div class="number">{{ stats.absent }}</div>
+</div>
+
+<div class="card">
+<h3>Pending Leave Requests</h3>
+<div class="number">{{ stats.pending }}</div>
+</div>
+
+<div class="card">
+<h3>Approved Leave Requests</h3>
+<div class="number">{{ stats.approved }}</div>
+</div>
+</div>
+
+<section class="section">
+<h2>Quick Access</h2>
+<div class="quick">
+<a href="students">
+<strong>Student Management</strong>
+<span>Add, edit, delete, search and manage student records.</span>
+</a>
+
+<a href="/attendance">
+<strong>Attendance Management</strong>
+<span>Mark daily attendance and view attendance history.</span>
+</a>
+
+<a href="/leave">
+<strong>Leave Management</strong>
+<span>Submit and review student leave applications.</span>
+</a>
+
+<a href="{{ url_for('module_overview') }}">
+    <strong>Module Overview</strong>
+    <span>View module-wise attendance, daily records and 80% eligibility.</span>
+</a>
+
+</div>
+</section>
+</main>
+
+<footer>
+Student Attendance & Leave Management System
+</footer>
+
+</body>
+</html>

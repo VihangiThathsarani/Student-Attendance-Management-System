@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Leave Management</title>
+<style>
+* {box-sizing:border-box}
+body {font-family:Arial,sans-serif;background:#f1f5f9;
+      color:#1e293b;margin:0}
+header {background:#1e3a8a;color:white;padding:25px}
+header h1 {margin:0 0 8px}
+main {max-width:1100px;margin:25px auto;padding:15px}
+.card {background:white;padding:25px;border-radius:12px;
+       margin-bottom:20px;box-shadow:0 3px 12px #0001}
+h2 {color:#1e40af}
+label {display:block;font-weight:bold;margin:12px 0 6px}
+input,select,textarea {width:100%;padding:11px;border:1px solid #cbd5e1;
+       border-radius:7px;font:inherit}
+textarea {min-height:85px}
+.grid {display:grid;grid-template-columns:1fr 1fr;gap:15px}
+button,.btn {display:inline-block;background:#2563eb;color:white;
+       border:0;border-radius:7px;padding:11px 16px;
+       cursor:pointer;text-decoration:none;font-size:14px}
+.btn {margin-bottom:15px}
+.green {background:#059669}
+.red {background:#dc2626}
+.gray {background:#64748b}
+.actions {display:flex;gap:6px;flex-wrap:wrap}
+.actions form {margin:0}
+.table-wrap {overflow-x:auto}
+table {border-collapse:collapse;width:100%;min-width:750px}
+th,td {padding:12px;text-align:left;border-bottom:1px solid #e2e8f0}
+th {background:#eff6ff}
+.error {color:#b91c1c;background:#fee2e2;padding:12px;border-radius:7px}
+.success {color:#166534;background:#dcfce7;padding:12px;border-radius:7px}
+@media(max-width:650px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<header>
+<h1>Student Attendance & Leave Management System</h1>
+<p>Leave Management</p>
+</header>
+
+<main>
+    {% if session.get("role") == "Admin" %}
+        <a class="btn gray" href="/students">Back to Students</a>
+        <a class="btn" href="/attendance">Attendance Management</a>
+    {% endif %}
+
+    <form action="{{ url_for('logout') }}" method="POST" style="display: inline;">
+        <button type="submit" style="
+            background-color: #dc3545;
+            color: white;
+            padding: 10px 18px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        ">
+            Logout
+        </button>
+    </form>
+
+    <section class="card">
+<h2>{{ "Edit Leave Request" if editing else "Apply for Leave" }}</h2>
+
+{% if error %}
+<p class="error">{{ error }}</p>
+{% endif %}
+
+{% if success %}
+<p class="success">{{ success }}</p>
+{% endif %}
+
+<form method="POST"
+ action="{{ url_for('edit_leave', leave_id=editing['id']) if editing else url_for('leave_management') }}">
+
+<div class="grid">
+<div>
+<label>Student</label>
+
+{% if session.get("role") == "Admin" %}
+
+    <select name="student_id" required>
+        <option value="">Select Student</option>
+
+        {% for s in students %}
+        <option value="{{ s['id'] }}"
+        {% if editing and editing['student_id'] == s['id'] %}selected{% endif %}>
+            {{ s['student_id'] }} - {{ s['name'] }}
+        </option>
+        {% endfor %}
+
+    </select>
+
+{% elif session.get("role") == "Student" %}
+
+    <input type="text"
+           value="{{ session.get('username') }}"
+           readonly>
+
+{% endif %}
+</div>
+
+<div>
+<label>Leave Type</label>
+<select name="leave_type" required>
+{% for type in ['Medical','Personal','Family Emergency','Other'] %}
+<option value="{{ type }}"
+{% if editing and editing['leave_type'] == type %}selected{% endif %}>
+{{ type }}
+</option>
+{% endfor %}
+</select>
+</div>
+
+<div>
+<label>Start Date</label>
+<input type="date" name="start_date" required
+value="{{ editing['start_date'] if editing else '' }}">
+</div>
+
+<div>
+<label>End Date</label>
+<input type="date" name="end_date" required
+value="{{ editing['end_date'] if editing else '' }}">
+</div>
+</div>
+
+<label>Reason</label>
+<textarea name="reason" maxlength="500" required
+placeholder="Enter the reason for leave">{{ editing['reason'] if editing else '' }}</textarea>
+
+<br><br>
+<button type="submit">
+{{ "Save Changes" if editing else "Submit Leave Request" }}
+</button>
+
+{% if editing %}
+<a class="btn gray" href="/leave">Cancel</a>
+{% endif %}
+</form>
+</section>
+
+<section class="card">
+<h2>Leave Request History</h2>
+
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th>Student</th>
+<th>Type</th>
+<th>Start</th>
+<th>End</th>
+<th>Reason</th>
+<th>Status</th>
+<th>Actions</th>
+</tr>
+</thead>
+<tbody>
+
+{% for leave in leaves %}
+<tr>
+<td>{{ leave['student_code'] }} - {{ leave['name'] }}</td>
+<td>{{ leave['leave_type'] }}</td>
+<td>{{ leave['start_date'] }}</td>
+<td>{{ leave['end_date'] }}</td>
+<td>{{ leave['reason'] }}</td>
+<td>{{ leave['status'] }}</td>
+
+<td>
+<div class="actions">
+
+    {% if session.get("role") == "Admin" %}
+
+    {% if leave['status'] == 'Pending' %}
+
+        <a class="btn"
+           href="{{ url_for('edit_leave', leave_id=leave['id']) }}">
+            Edit
+        </a>
+
+        <form method="POST"
+              action="{{ url_for('change_leave_status',
+                                 leave_id=leave['id'],
+                                 status='Approved') }}">
+            <button type="submit" class="green">Approve</button>
+        </form>
+            <form method="POST"
+                  action="{{ url_for('change_leave_status',
+                                     leave_id=leave['id'],
+                                     status='Rejected') }}">
+                <button type="submit" class="red">Reject</button>
+            </form>
+
+        {% endif %}
+
+        <form method="POST"
+              action="{{ url_for('delete_leave',
+                                 leave_id=leave['id']) }}"
+              onsubmit="return confirm('Delete this leave request?')">
+            <button type="submit" class="red">Delete</button>
+        </form>
+
+    {% elif session.get("role") == "Student" %}
+
+        {% if leave['status'] == 'Pending' %}
+
+            <a class="btn"
+               href="{{ url_for('edit_leave',
+                                leave_id=leave['id']) }}">
+                Edit
+            </a>
+
+            <form method="POST"
+                  action="{{ url_for('delete_leave',
+                                     leave_id=leave['id']) }}"
+                  onsubmit="return confirm('Withdraw this leave request?')">
+                <button type="submit" class="red">Withdraw</button>
+            </form>
+
+        {% else %}
+
+            <span>Reviewed</span>
+
+        {% endif %}
+
+    {% endif %}
+
+</div>
+
+</td>
+</tr>
+{% else %}
+<tr><td colspan="7">No leave requests yet.</td></tr>
+{% endfor %}
+
+</tbody>
+</table>
+</div>
+</section>
+</main>
+</body>
+</html>
